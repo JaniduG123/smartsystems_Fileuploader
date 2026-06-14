@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vault-bg: #0B132B;
+  --color-vault-panel: #1C2541;
+  --color-vault-accent: #22d3ee; /* Electric Blue/Cyan */
+  --color-vault-border: #3A4468;
+  --color-vault-dark: #070C1B;
+  --color-vault-darker: #040710;
+  --font-sans: 'Inter', sans-serif;
+}
+
+body {
+  @apply bg-vault-bg text-slate-100 antialiased h-screen overflow-hidden font-sans;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B132B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A365C;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #22d3ee;
+}
+
+/* Pulse / Glow animations */
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 4px rgba(34, 211, 238, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4);
+  }
+}
+
+.brand-glow {
+  animation: glow 3s infinite ease-in-out;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: rgba(34, 211, 238, 0.2);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.05);
+  }
+  50% {
+    border-color: rgba(34, 211, 238, 0.6);
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.25);
+  }
+}
+
+.border-glow {
+  animation: pulse-border 2.5s infinite ease-in-out;
+}
+
+/* Button & interactive element hover glow */
+.hover-glow {
+  transition: all 0.2s ease-in-out;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.45);
+  border-color: rgba(34, 211, 238, 0.6);
+}
+
+/* Active glowing stats badge */
+.active-glow {
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.25);
+}
+
+/* Simple fade-in and scale animations for premium transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
