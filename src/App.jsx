@@ -696,8 +696,8 @@ export default function App() {
       <main className="flex-1 flex flex-col min-w-0 bg-vault-bg relative overflow-y-auto">
         
         {/* Main Content Header */}
-        <header className="h-16 border-b border-vault-border bg-vault-panel/40 backdrop-blur-md flex items-center justify-between px-4 lg:px-8 shrink-0 z-10 sticky top-0">
-          <div className="flex items-center gap-2.5 text-sm text-slate-400 font-medium">
+        <header className="h-16 border-b border-vault-border bg-vault-panel/40 backdrop-blur-md flex items-center justify-between px-3 sm:px-4 lg:px-8 shrink-0 z-10 sticky top-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 text-sm text-slate-400 font-medium">
             {/* Hamburger Button for mobile/tablet */}
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
@@ -706,17 +706,35 @@ export default function App() {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="hidden sm:inline">Enclaves</span>
-            <span className="sm:hidden">Enclave</span>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-vault-accent font-semibold flex items-center gap-1.5">
-              Personal Vault
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block"></span>
-            </span>
+            
+            {/* SmartSystems brand logo/title visible only on mobile/tablet (hidden on lg where sidebar is shown) */}
+            <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden select-none">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-vault-accent/10 border border-vault-accent/30 flex items-center justify-center text-vault-accent shadow-[0_0_10px_rgba(34,211,238,0.15)] active-glow">
+                <Shield className="h-4 w-4 sm:h-4.5 sm:w-4.5 stroke-[1.8]" />
+              </div>
+              <div>
+                <h1 className="font-bold text-xs leading-none tracking-wider uppercase font-display brand-glow text-white">
+                  SmartSystems
+                </h1>
+                <span className="text-[7px] text-vault-accent font-bold tracking-widest uppercase flex items-center gap-0.5 mt-0.5">
+                  Ops <span className="inline-block h-1 w-1 rounded-full bg-emerald-400 animate-ping"></span>
+                </span>
+              </div>
+            </div>
+
+            {/* Breadcrumb Navigation - Hidden on Mobile/Tablet, visible only on lg screens */}
+            <div className="hidden lg:flex items-center gap-2.5">
+              <span>Enclaves</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+              <span className="text-vault-accent font-semibold flex items-center gap-1.5">
+                Personal Vault
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block"></span>
+              </span>
+            </div>
           </div>
 
           {/* Quick Search, Sharing and Auth Cluster */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="relative w-48 lg:w-64 max-md:hidden">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
                 <Search className="h-4 w-4" />
@@ -740,7 +758,7 @@ export default function App() {
             </button>
 
             {/* Rebranded Auth Cluster */}
-            <div className="flex items-center gap-3 pl-4 border-l border-vault-border relative">
+            <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-vault-border relative">
               {isLoggedIn ? (
                 /* Logged In State */
                 <div className="relative">
@@ -812,11 +830,11 @@ export default function App() {
                 </div>
               ) : (
                 /* Logged Out State - Directly trigger Google Sign-In on click */
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button 
                     onClick={handleGoogleLogin}
                     disabled={isAuthLoading}
-                    className="text-slate-300 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg border border-vault-border/60 hover:border-vault-accent transition hover-glow flex items-center gap-1.5"
+                    className="text-slate-300 hover:text-white text-[11px] sm:text-xs font-semibold px-2 py-1.5 sm:px-3 rounded-lg border border-vault-border/60 hover:border-vault-accent transition hover-glow flex items-center gap-1 sm:gap-1.5"
                   >
                     {isAuthLoading ? (
                       <RefreshCw className="h-3.5 w-3.5 animate-spin text-vault-accent" />
@@ -828,7 +846,7 @@ export default function App() {
                   <button 
                     onClick={handleGoogleLogin}
                     disabled={isAuthLoading}
-                    className="bg-vault-accent hover:bg-vault-accent/90 text-vault-dark text-xs font-extrabold px-3 py-1.5 rounded-lg transition hover-glow shadow-[0_0_12px_rgba(34,211,238,0.25)] animate-none"
+                    className="bg-vault-accent hover:bg-vault-accent/90 text-vault-dark text-[11px] sm:text-xs font-extrabold px-2 py-1.5 sm:px-3 rounded-lg transition hover-glow shadow-[0_0_12px_rgba(34,211,238,0.25)] animate-none shrink-0"
                   >
                     {isAuthLoading ? 'Authenticating...' : 'Sign Up'}
                   </button>
