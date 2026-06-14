@@ -31,7 +31,8 @@ import {
   LogIn,
   LogOut,
   User,
-  ChevronDown
+  ChevronDown,
+  Menu
 } from 'lucide-react';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
@@ -110,6 +111,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Drag & drop state
   const [isDragging, setIsDragging] = useState(false);
@@ -423,7 +425,7 @@ export default function App() {
     <div className="flex h-screen w-screen overflow-hidden bg-vault-bg font-sans text-slate-100 antialiased selection:bg-vault-accent/30 selection:text-vault-accent">
       
       {/* 1. Sidebar Container */}
-      <aside className="w-64 border-r border-vault-border bg-vault-dark flex flex-col z-10 shrink-0">
+      <aside className="hidden lg:flex w-64 border-r border-vault-border bg-vault-dark flex-col z-10 shrink-0">
         {/* Brand/Logo Header */}
         <div className="h-16 flex items-center px-6 gap-3 border-b border-vault-border">
           <div className="h-10 w-10 rounded-lg bg-vault-accent/10 border border-vault-accent/30 flex items-center justify-center text-vault-accent shadow-[0_0_15px_rgba(34,211,238,0.15)] active-glow">
@@ -543,13 +545,169 @@ export default function App() {
         </div>
       </aside>
 
+      {/* Mobile Drawer (Visible on < lg screen widths when isMobileMenuOpen is true) */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+          
+          <aside className="relative flex w-64 max-w-xs flex-1 flex-col bg-vault-dark border-r border-vault-border h-full animate-slide-in">
+            <div className="absolute top-4 right-4 z-10">
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 rounded-lg border border-vault-border bg-vault-darker hover:bg-vault-panel text-slate-400 hover:text-white transition"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="h-16 flex items-center px-6 gap-3 border-b border-vault-border">
+              <div className="h-10 w-10 rounded-lg bg-vault-accent/10 border border-vault-accent/30 flex items-center justify-center text-vault-accent shadow-[0_0_15px_rgba(34,211,238,0.15)] active-glow">
+                <Shield className="h-6 w-6 stroke-[1.8]" />
+              </div>
+              <div>
+                <h1 className="font-bold text-sm leading-tight tracking-wider uppercase font-display brand-glow text-white">
+                  SmartSystems
+                </h1>
+                <span className="text-[9px] text-vault-accent font-bold tracking-widest uppercase flex items-center gap-1">
+                  Operations <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                </span>
+              </div>
+            </div>
+
+            <nav className="p-4 flex-1 space-y-1 overflow-y-auto">
+              <div className="text-[11px] font-bold text-slate-500 tracking-wider uppercase mb-2 px-2">Workspace Navigation</div>
+              
+              <button 
+                onClick={() => {
+                  setActiveTab('dashboard');
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group ${
+                  activeTab === 'dashboard' 
+                    ? 'bg-vault-panel text-white font-medium border-l-2 border-vault-accent' 
+                    : 'text-slate-400 hover:text-white hover:bg-vault-panel/50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Database className={`h-4.5 w-4.5 ${activeTab === 'dashboard' ? 'text-vault-accent' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                  <span>Security Dashboard</span>
+                </div>
+                <ChevronRight className="h-4 w-4 opacity-50" />
+              </button>
+
+              <button 
+                onClick={() => {
+                  setActiveTab('all-files');
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group ${
+                  activeTab === 'all-files' 
+                    ? 'bg-vault-panel text-white font-medium border-l-2 border-vault-accent' 
+                    : 'text-slate-400 hover:text-white hover:bg-vault-panel/50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Folder className={`h-4.5 w-4.5 ${activeTab === 'all-files' ? 'text-vault-accent' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                  <span>All Documents</span>
+                </div>
+                <span className="bg-vault-bg border border-vault-border/50 text-[10px] font-semibold text-vault-accent px-1.5 py-0.5 rounded-md">
+                  {files.length}
+                </span>
+              </button>
+
+              <button 
+                onClick={() => {
+                  handleOpenShare();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-vault-panel/50 transition-all duration-200 group"
+              >
+                <div className="flex items-center gap-3">
+                  <Mail className="h-4.5 w-4.5 text-slate-400 group-hover:text-slate-300" />
+                  <span>Quick Share Link</span>
+                </div>
+                <Sparkles className="h-4 w-4 text-vault-accent/70" />
+              </button>
+
+              <button 
+                onClick={() => {
+                  setActiveTab('settings');
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group ${
+                  activeTab === 'settings' 
+                    ? 'bg-vault-panel text-white font-medium border-l-2 border-vault-accent' 
+                    : 'text-slate-400 hover:text-white hover:bg-vault-panel/50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Settings className={`h-4.5 w-4.5 ${activeTab === 'settings' ? 'text-vault-accent' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                  <span>Settings & Keys</span>
+                </div>
+                <ChevronRight className="h-4 w-4 opacity-50" />
+              </button>
+
+              <div className="pt-6">
+                <div className="text-[11px] font-bold text-slate-500 tracking-wider uppercase mb-2 px-2 flex justify-between items-center">
+                  <span>Secure Enclaves</span>
+                  <FolderPlus className="h-3.5 w-3.5 hover:text-vault-accent cursor-pointer" />
+                </div>
+                <div className="space-y-1.5 px-2 text-xs text-slate-400">
+                  <div className="flex items-center gap-2 py-1 px-1.5 hover:bg-vault-panel/30 rounded cursor-pointer transition">
+                    <Folder className="h-3.5 w-3.5 text-teal-400" />
+                    <span className="truncate">Root / Finance</span>
+                  </div>
+                  <div className="flex items-center gap-2 py-1 px-1.5 hover:bg-vault-panel/30 rounded cursor-pointer transition">
+                    <Folder className="h-3.5 w-3.5 text-yellow-400" />
+                    <span className="truncate">Root / Banking</span>
+                  </div>
+                  <div className="flex items-center gap-2 py-1 px-1.5 hover:bg-vault-panel/30 rounded cursor-pointer transition">
+                    <Folder className="h-3.5 w-3.5 text-indigo-400" />
+                    <span className="truncate">Root / Legal</span>
+                  </div>
+                </div>
+              </div>
+            </nav>
+
+            <div className="p-4 border-t border-vault-border bg-vault-darker">
+              <div className="flex justify-between text-xs text-slate-400 mb-1.5 font-medium">
+                <span>Enclave Space</span>
+                <span className="text-white font-bold">{currentUtilizedStorage.toFixed(2)} MB / 1000 MB</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-vault-accent to-blue-500 h-1.5 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (currentUtilizedStorage / 1000) * 100)}%` }}
+                ></div>
+              </div>
+              <div className="flex items-center gap-1.5 mt-3 text-[10px] text-slate-400">
+                <Lock className="h-3 w-3 text-vault-accent" />
+                <span className="truncate">AES-256 Multi-Node Encryption Active</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+
       {/* 2. Main content container */}
       <main className="flex-1 flex flex-col min-w-0 bg-vault-bg relative overflow-y-auto">
         
         {/* Main Content Header */}
-        <header className="h-16 border-b border-vault-border bg-vault-panel/40 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-10 sticky top-0">
-          <div className="flex items-center gap-2 text-sm text-slate-400 font-medium">
-            <span>Enclaves</span>
+        <header className="h-16 border-b border-vault-border bg-vault-panel/40 backdrop-blur-md flex items-center justify-between px-4 lg:px-8 shrink-0 z-10 sticky top-0">
+          <div className="flex items-center gap-2.5 text-sm text-slate-400 font-medium">
+            {/* Hamburger Button for mobile/tablet */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-1.5 rounded-lg border border-vault-border bg-vault-panel/50 hover:bg-vault-panel text-slate-400 hover:text-white transition cursor-pointer"
+              aria-label="Open Navigation Drawer"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <span className="hidden sm:inline">Enclaves</span>
+            <span className="sm:hidden">Enclave</span>
             <ChevronRight className="h-3.5 w-3.5" />
             <span className="text-vault-accent font-semibold flex items-center gap-1.5">
               Personal Vault
@@ -574,10 +732,11 @@ export default function App() {
 
             <button 
               onClick={() => handleOpenShare()}
-              className="bg-vault-panel border border-vault-border hover:border-vault-accent/50 hover:bg-vault-dark text-slate-300 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-2 hover-glow"
+              className="bg-vault-panel border border-vault-border hover:border-vault-accent/50 hover:bg-vault-dark text-slate-300 hover:text-white text-xs font-semibold px-2 py-1.5 sm:px-3 rounded-lg transition flex items-center gap-1.5 sm:gap-2 hover-glow shrink-0"
             >
               <Share2 className="h-3.5 w-3.5 text-vault-accent" />
-              Quick Share
+              <span className="hidden sm:inline">Quick Share</span>
+              <span className="sm:hidden">Share</span>
             </button>
 
             {/* Rebranded Auth Cluster */}
@@ -680,7 +839,7 @@ export default function App() {
         </header>
 
         {activeTab === 'dashboard' || activeTab === 'all-files' ? (
-          <div className="p-8 space-y-8 max-w-7xl mx-auto w-full flex-1">
+          <div className="p-4 sm:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto w-full flex-1">
             
             {/* Quick Metrics Grid (Clickable to trigger details popup overlays) */}
             <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -816,7 +975,7 @@ export default function App() {
                         <p className="text-xs text-slate-500 mt-1 max-w-sm">Try tweaking your search term or upload a new document to this category.</p>
                       </div>
                     ) : (
-                      <table className="w-full text-left border-collapse">
+                      <table className="w-full text-left border-collapse min-w-[600px]">
                         <thead>
                           <tr className="border-b border-vault-border/50 text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-vault-darker/30">
                             <th className="px-6 py-3.5">Name</th>
@@ -1168,7 +1327,7 @@ export default function App() {
             ></div>
             
             {/* Modal Content */}
-            <div className="bg-vault-panel border border-vault-border rounded-xl w-full max-w-md p-6 relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-all animate-scale-up">
+            <div className="bg-vault-panel border border-vault-border rounded-xl w-[92%] sm:w-full max-w-md p-6 relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-all animate-scale-up">
               <div className="flex items-center justify-between border-b border-vault-border/60 pb-3 mb-5">
                 <h3 className="font-bold text-sm text-white flex items-center gap-2">
                   <Mail className="h-4.5 w-4.5 text-vault-accent" />
@@ -1282,7 +1441,7 @@ export default function App() {
               onClick={() => setActiveViewerFile(null)}
             ></div>
             
-            <div className="bg-vault-panel border border-vault-border rounded-xl w-full max-w-2xl p-6 relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-all flex flex-col h-[520px] max-h-[85vh] animate-scale-up">
+            <div className="bg-vault-panel border border-vault-border rounded-xl w-[92%] sm:w-full max-w-2xl p-6 relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-all flex flex-col h-[520px] max-h-[85vh] animate-scale-up">
               
               {/* Viewer Header */}
               <div className="flex items-center justify-between border-b border-vault-border/60 pb-3 mb-4 shrink-0">
@@ -1566,7 +1725,7 @@ export default function App() {
             ></div>
             
             {/* Modal Content */}
-            <div className="bg-vault-panel border border-vault-border rounded-xl w-full max-w-sm p-6 relative z-10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] border-glow transform transition-all animate-scale-up">
+            <div className="bg-vault-panel border border-vault-border rounded-xl w-[92%] sm:w-full max-w-sm p-6 relative z-10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] border-glow transform transition-all animate-scale-up">
               
               <div className="flex justify-between items-center border-b border-vault-border/40 pb-3 mb-5">
                 <h3 className="font-bold text-xs text-white flex items-center gap-2 select-none tracking-wider uppercase">
