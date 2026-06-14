@@ -352,7 +352,7 @@ export default function App() {
     setIsShareModalOpen(true);
   };
 
-  // Real Email Dispatches (EmailJS Setup)
+  // Real Email Dispatches (Google Apps Script Web App API)
   const handleShareSubmit = (e) => {
     e.preventDefault();
     if (!shareForm.email || !shareForm.fileId) {
@@ -362,48 +362,41 @@ export default function App() {
     
     setIsSharingLoading(true);
     const sharedFile = files.find(f => f.id === shareForm.fileId);
-    
-    // Map template parameters
-    const templateParams = {
-      to_email: shareForm.email,
-      file_name: sharedFile ? sharedFile.name : 'Unknown Document',
-      file_size: sharedFile ? sharedFile.size : 'N/A',
-      file_category: sharedFile ? sharedFile.category : 'DOCUMENT',
-      message: shareForm.message || 'Access credentials and encrypted key link enclosed.',
-      sender_name: user ? user.name : 'SmartSystems Agent',
-      sender_email: user ? user.email : 'agent@smartsystems.io'
+    const fileTitle = sharedFile ? sharedFile.name : 'Unknown Document';
+    const accessMessage = shareForm.message || 'Access credentials and encrypted key link enclosed.';
+
+    const payload = {
+      recipientEmail: shareForm.email,
+      fileTitle: fileTitle,
+      accessMessage: accessMessage
     };
 
-    // Configuration keys (placeholders - replace with real keys once setup)
-    const SERVICE_ID = 'YOUR_SERVICE_ID';
-    const TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-    const PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
-
-    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
-      .then((res) => {
-        console.log('EmailJS dispatch success:', res.status, res.text);
-        setIsSharingLoading(false);
-        setIsShareModalOpen(false);
-        addToast(
-          'Email Dispatched', 
-          `Secure access link sent to ${shareForm.email} for "${sharedFile ? sharedFile.name : 'File'}"`, 
-          'success'
-        );
-      })
-      .catch((err) => {
-        console.warn('EmailJS keys unconfigured. Running mock fallback dispatch simulation.', err);
-        
-        // Graceful fallback simulator so operations do not crash
-        setTimeout(() => {
-          setIsSharingLoading(false);
-          setIsShareModalOpen(false);
-          addToast(
-            'Email Shared (Mock)', 
-            `Dispatched encrypted link to ${shareForm.email} (SSO Dispatch Fallback)`, 
-            'success'
-          );
-        }, 1800);
-      });
+    fetch('https://script.google.com/macros/s/AKfycbzFr0LFR-soCC1rcusFEYQ2T3hr681yyQRITaUqvL059IdKgB25mab5OyliODFLJQ/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      setIsSharingLoading(false);
+      setIsShareModalOpen(false);
+      addToast(
+        'Email Dispatched', 
+        `Secure access link sent to ${shareForm.email} for "${fileTitle}"`, 
+        'success'
+      );
+    })
+    .catch((err) => {
+      console.error('Apps Script secure dispatch error:', err);
+      setIsSharingLoading(false);
+      addToast(
+        'Dispatch Error', 
+        'Failed to connect to the Apps Script security enclave portal.', 
+        'error'
+      );
+    });
   };
 
   // Calculate dynamic stats
