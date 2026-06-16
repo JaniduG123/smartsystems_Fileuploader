@@ -414,6 +414,106 @@ export default function App() {
     return matchesSearch && matchesCategory;
   });
 
+  if (!isLoggedIn) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-vault-bg font-sans text-slate-100 antialiased selection:bg-vault-accent/30 selection:text-vault-accent relative overflow-hidden">
+        {/* Background futuristic grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#070c1b_1px,transparent_1px),linear-gradient(to_bottom,#070c1b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none"></div>
+        
+        {/* Decorative neon glow spots */}
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-vault-accent/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div className="w-[92%] max-w-md bg-vault-panel/30 border border-vault-border/80 rounded-2xl p-8 relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md border-glow flex flex-col items-center text-center animate-fade-in">
+          {/* Logo badge */}
+          <div className="h-16 w-16 rounded-2xl bg-vault-accent/10 border border-vault-accent/30 flex items-center justify-center text-vault-accent shadow-[0_0_25px_rgba(34,211,238,0.25)] active-glow mb-6 animate-pulse">
+            <Shield className="h-9 w-9 stroke-[1.8]" />
+          </div>
+
+          <h1 className="font-extrabold text-3xl tracking-wider uppercase font-display brand-glow text-white">
+            Smart Systems
+          </h1>
+          <span className="text-xs text-vault-accent font-bold tracking-widest uppercase mt-2 mb-8 block bg-vault-darker/60 px-3 py-1 rounded-full border border-vault-border/50">
+            Personal Vault
+          </span>
+
+          <p className="text-xs text-slate-400 mb-8 leading-relaxed max-w-xs select-none">
+            Welcome to the secure data enclave. Access to personal repository assets is locked under AES-256 multi-node authentication.
+          </p>
+
+          <button
+            onClick={handleGoogleLogin}
+            disabled={isAuthLoading}
+            className="w-full bg-gradient-to-r from-vault-accent to-blue-500 hover:from-vault-accent/95 hover:to-blue-500/95 text-vault-dark text-xs font-extrabold py-3.5 px-6 rounded-xl transition-all duration-300 hover-glow shadow-[0_0_20px_rgba(34,211,238,0.25)] flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed select-none group cursor-pointer"
+          >
+            {isAuthLoading ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                <span>Establishing Secure Handshake...</span>
+              </>
+            ) : (
+              <>
+                <LogIn className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <span>Login / Signing with Google</span>
+              </>
+            )}
+          </button>
+
+          {/* Secure disclaimer */}
+          <div className="mt-8 flex items-center gap-2 text-[10px] text-slate-500 select-none">
+            <Lock className="h-3 w-3 text-vault-accent" />
+            <span>End-to-End Cryptographic Access Control</span>
+          </div>
+        </div>
+
+        {/* Toast Notifications Overlay */}
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full">
+          {toasts.map((toast) => {
+            let Icon = CheckCircle2;
+            let themeClass = 'bg-vault-dark border-emerald-500/30 text-emerald-400';
+            if (toast.type === 'error') {
+              Icon = AlertTriangle;
+              themeClass = 'bg-vault-dark border-rose-500/30 text-rose-400';
+            } else if (toast.type === 'info') {
+              Icon = Info;
+              themeClass = 'bg-vault-dark border-vault-accent/30 text-vault-accent';
+            }
+
+            return (
+              <div 
+                key={toast.id} 
+                className={`flex items-start gap-3 p-4 rounded-xl border shadow-[0_10px_30px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-300 transform translate-y-0 animate-fade-in ${themeClass}`}
+              >
+                <div className="shrink-0 mt-0.5">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xs font-bold text-white tracking-wide">
+                    {toast.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-300 mt-1 leading-relaxed">
+                    {toast.message}
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+                  className="text-slate-500 hover:text-white transition"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Center Footer Note */}
+        <div className="absolute bottom-6 left-0 right-0 text-center text-[10px] text-slate-500 tracking-wider font-mono select-none">
+          Powered by SmartSystem &copy; 2026
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-vault-bg font-sans text-slate-100 antialiased selection:bg-vault-accent/30 selection:text-vault-accent">
       
